@@ -104,6 +104,7 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -495,6 +496,9 @@ func typeForValue(value interface{}, structName string, tags []string, subStruct
 	if v == "float64" && convertFloats {
 		v = disambiguateFloatInt(value)
 	}
+	if v == "string" {
+		v = disambiguateStringTime(value)
+	}
 	return v
 }
 
@@ -507,6 +511,17 @@ func disambiguateFloatInt(value interface{}) string {
 		var tmp int64
 		return reflect.TypeOf(tmp).Name()
 	}
+	return reflect.TypeOf(value).Name()
+}
+
+var toTimeRE = regexp.MustCompile(`\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(\+\d\d:\d\d|Z)`)
+
+// Try to figure out if the string is a time value
+func disambiguateStringTime(value interface{}) string {
+	if toTimeRE.MatchString(value.(string)) {
+		return "time.Time"
+	}
+
 	return reflect.TypeOf(value).Name()
 }
 
