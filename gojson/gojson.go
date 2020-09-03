@@ -108,6 +108,10 @@ func main() {
 		parser = ParseYaml
 	}
 
+	if *forceFloats {
+		convertFloats = false
+	}
+
 	if output, err := Generate(input, parser, *name, *pkg, tagList, *subStruct, convertFloats); err != nil {
 		fmt.Fprintln(os.Stderr, "error parsing", err)
 		os.Exit(1)
