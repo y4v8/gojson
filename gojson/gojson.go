@@ -49,13 +49,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	. "github.com/y4v8/gojson"
 )
 
 var (
-	name        = flag.String("name", "Foo", "the name of the struct")
+	name        = flag.String("name", "", "the name of the struct")
 	pkg         = flag.String("pkg", "main", "the name of the package for the generated code")
 	inputName   = flag.String("input", "", "the name of the input file containing JSON (if input not provided via STDIN)")
 	outputName  = flag.String("o", "", "the name of the file to write the output to (outputs to STDOUT by default)")
@@ -98,6 +99,14 @@ func main() {
 		input = f
 	}
 
+	if *name == "" {
+		if *inputName == "" {
+			log.Fatal("struct name is required")
+		}
+		filename := filepath.Base(*inputName)
+		*name = FmtFieldName(filename[:len(filename)-len(filepath.Ext(filename))])
+	}
+
 	var convertFloats bool
 	var parser Parser
 	switch *format {
@@ -122,7 +131,7 @@ func main() {
 				log.Fatalf("writing output: %s", err)
 			}
 		} else {
-			fmt.Print(string(output))
+			fmt.Println(string(output))
 		}
 	}
 
