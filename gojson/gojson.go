@@ -51,7 +51,7 @@ import (
 	"os"
 	"strings"
 
-	. "github.com/yome/gojson"
+	. "github.com/y4v8/gojson"
 )
 
 var (
