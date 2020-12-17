@@ -236,14 +236,17 @@ func Generate(input io.Reader, parser Parser, structName, pkgName string, tags [
 		structName,
 		generateTypes(result, structName, tags, 0, subStructMap, convertFloats))
 
-	keys := make([]string, 0, len(subStructMap))
-	for key := range subStructMap {
-		keys = append(keys, key)
+	invertMap := make(map[string]string, len(subStructMap))
+	invertKeys := make([]string, 0, len(subStructMap))
+	for key, val := range subStructMap {
+		invertMap[val] = key
+		invertKeys = append(invertKeys, val)
 	}
 
-	sort.Strings(keys)
+	sort.Strings(invertKeys)
 
-	for _, k := range keys {
+	for _, invertKey := range invertKeys {
+		k := invertMap[invertKey]
 		src = fmt.Sprintf("%v\n\ntype %v %v", src, subStructMap[k], k)
 	}
 
